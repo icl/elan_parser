@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Aaron Hunter"]
   s.email       = ["aaron@hunter.cx"]
   s.homepage    = ""
-    s.summary     = %q{Maps ELAN .eaf files to a ruby object.}
+  s.summary     = %q{Maps ELAN .eaf files to a ruby object.}
   s.description = %q{Each .eaf file is essentially XML. Each node is mapped to ruby classes using the HappyMapper Gem. Using the Elan Gem you should be able to load in the contents of a .eaf file and get back a ruby object with all of the data.}
 
   s.rubyforge_project = "elan_parser"
@@ -22,4 +22,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
   # s.add_runtime_dependency "rest-client"
   s.add_runtime_dependency "happymapper"
+  s.add_runtime_dependency "active_record"
 end
