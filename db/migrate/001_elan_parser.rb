@@ -27,7 +27,7 @@ class ElanParser < ActiveRecord::Migration
 	end
 
 	create_table :elan_parser_linked_file_descriptors do |t|
-	    # This is untested and may have :null => false requirements
+	  # This is untested and may have :null => false requirements
 		t.column :link_url, :string, :null => true
 		t.column :relative_link_url, :string, :null => true
 		t.column :mime_type, :string, :null => true

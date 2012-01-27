@@ -1,5 +1,5 @@
 require "elan_parser/version"
-require "HappyMapper"
+require "happymapper"
 
 module ElanParser
 	module XML
