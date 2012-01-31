@@ -53,8 +53,8 @@ module ElanParser
 
 			tag 'TIME_SLOT'
 
-			attribute :time_slot_id, String
-			attribute :time_value, Integer
+			attribute :time_slot_id, String, :tag => 'TIME_SLOT_ID'
+			attribute :time_value, Integer, :tag => 'TIME_VALUE'
 		end
 
 		class TimeOrder

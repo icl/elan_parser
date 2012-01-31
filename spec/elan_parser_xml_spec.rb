@@ -26,4 +26,8 @@ describe ElanParser::XML do
 		it "Should have at least one tier, and one annotation" do
 			puts @eparser.tiers[0].annotations[0].alignable_annotations[0].annotation_value
 		end
+
+    it " should have time slots with time values" do
+      @eparser.time_order.time_slots.first.time_value.should_not be_nil
+    end
 end
