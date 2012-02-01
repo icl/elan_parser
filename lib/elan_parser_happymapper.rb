@@ -19,6 +19,7 @@ module ElanParser
 			include HappyMapper
 
 			tag 'PROPERTY'
+			content :value
 			attribute :name, String, :tag => 'NAME'
 		end
 
@@ -53,8 +54,8 @@ module ElanParser
 
 			tag 'TIME_SLOT'
 
-			attribute :time_slot_id, String
-			attribute :time_value, Integer
+			attribute :time_slot_id, String, :tag => 'TIME_SLOT_ID'
+			attribute :time_value, Integer, :tag => 'TIME_VALUE'
 		end
 
 		class TimeOrder
@@ -62,6 +63,7 @@ module ElanParser
 
 			tag 'TIME_ORDER'
 
+			content :value
 			has_many :time_slots, TimeSlot
 		end
 
@@ -83,8 +85,10 @@ module ElanParser
 
 			tag 'ALIGNABLE_ANNOTATION'
 
-			attribute :time_slot_ref1, Integer, :tag => 'TIME_SLOT_REF1'
-			attribute :time_slot_ref2, Integer, :tag => 'TIME_SLOT_REF2'
+			content :value
+
+			attribute :time_slot_ref1, String, :tag => 'TIME_SLOT_REF1'
+			attribute :time_slot_ref2, String, :tag => 'TIME_SLOT_REF2'
 			attribute :svg_ref, String, :tag => 'SVG_REF'
 
 			attribute :annotation_id, String, :tag => 'ANNOTATION_ID'
