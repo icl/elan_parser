@@ -1,4 +1,7 @@
-adapter: sqlite3
-database: db/development.sqlite3
+adapter: postgresql
+database: elan_parser
 pool: 5
 timeout: 5000
+host: localhost
+username: elan_parser
+password: elan

@@ -16,25 +16,31 @@ module ElanParser
 		class Project < ActiveRecord::Base
 			self.table_name = 'elan_parser_projects'
 
-			has_one :documents
+			has_one :document
 		end
 
 		class MediaDescriptor < ActiveRecord::Base
 			self.table_name = 'elan_parser_media_descriptors'
 
+			has_one :header
 		end
 
 		class Property < ActiveRecord::Base
 			self.table_name = 'elan_parser_properties'
 
+			has_one :header
 		end
 
+		#STUB
 		class LinkedFileDescriptor < ActiveRecord::Base
 			self.table_name = 'elan_parser_linked_file_descriptors'
 		end
 
 		class Header < ActiveRecord::Base
 			self.table_name = 'elan_parser_headers'
+
+			belongs_to :annotation_document
+			has_many :media_descriptors, :through => :header_media_descriptor
 		end
 
 		class HeaderMediaDescriptor < ActiveRecord::Base
@@ -44,6 +50,7 @@ module ElanParser
 			belongs_to :media_descriptor
 		end
 
+		#STUB
 		class HeaderLinkedFileDescriptor < ActiveRecord::Base
 			self.table_name = 'elan_parser_headers_linked_file_descriptors'
 		end
@@ -54,37 +61,63 @@ module ElanParser
 
 		class TimeSlot < ActiveRecord::Base
 			self.table_name = 'elan_parser_time_slots'
+
+			has_one :alignable_annotation_time_slot
+			has_one :time_order, :through => :time_order_time_slot
 		end
 
 		class TimeOrder < ActiveRecord::Base
 			self.table_name = 'elan_parser_time_orders'
+
+			belongs_to :annotation_document
+			has_many :time_slot, :through => :time_order_time_slot
 		end
 
+		class TimeOrderTimeSlot < ActiveRecord::Base
+			self.table_name = 'elan_parser_time_orders_time_slots'
+
+			belongs_to :time_order
+			belongs_to :time_slot
+		end
+
+		#STUB
 		class ReferenceAnnotation < ActiveRecord::Base
 			self.table_name = 'elan_parser_reference_annotations'
 		end
 
 		class AlignableAnnotation < ActiveRecord::Base
 			self.table_name = 'elan_parser_alignable_annotations'
+
+			has_one :alignable_annotation_time_slot
+			has_one :annotation
 		end
 
 		class AlignableAnnotationTimeSlot < ActiveRecord::Base
 			self.table_name = 'elan_parser_alignable_annotations_time_slots'
+
+			belongs_to :alignable_annotation, :class_name => "AlignableAnnotation", :foreign_key => "alignable_annotation_id"
+			belongs_to :time_slot_ref1, :class_name => "TimeSlot", :foreign_key => "time_slot_ref1"
+			belongs_to :time_slot_ref2, :class_name => "TimeSlot", :foreign_key => "time_slot_ref2"
 		end
 
 		class Annotation < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotations'
+
+			has_one :tier, :through => :annotation_tier
+			belongs_to :alignable_annotation
 		end
 
 		class AnnotationDocument < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents'
 
-			belongs_to :documents
+			belongs_to :document
 
 			has_one :header
-	#		has_one :time_order
-			has_many :tiers_to_annotations
-			has_many :tiers, :through => :tiers_to_annotations
+			has_one :time_order
+
+			has_many :tiers, :through => :annotation_tier
+
+	## These relationships are not active. They are currently stubs.
 	#		has_many :linguistic_types
 	#		has_many :locales
 	#		has_many :constraints
@@ -96,87 +129,85 @@ module ElanParser
 		class Tier < ActiveRecord::Base
 			self.table_name = 'elan_parser_tiers'
 
-			has_many :tiers_to_annotations
-			has_many :tiers, :through => :tiers_to_annotations
+			has_many :annotation_tiers, :through => :annotation_tier
 		end
 
 		class AnnotationTier < ActiveRecord::Base
-			self.table_name = 'elan_parser_annotation_documents_tiers'
+			self.table_name = 'elan_parser_annotations_tiers'
 
-			belongs_to :annotation_document
+			belongs_to :annotation
 			belongs_to :tier
 		end
 
+		#STUB
 		class LinguisticType < ActiveRecord::Base
 			self.table_name = 'elan_parser_linguistic_types'
 
 		end
 
+		#STUB
 		class Locale < ActiveRecord::Base
 			self.table_name = 'elan_parser_locales'
 		end
 
+		#STUB
 		class Constraint < ActiveRecord::Base
 			self.table_name = 'elan_parser_constraints'
 		end
 
+		#STUB
 		class CvEntry < ActiveRecord::Base
 			self.table_name = 'elan_parser_cv_entries'
 		end
 
+		#STUB
 		class ControlledVocabulary < ActiveRecord::Base
 			self.table_name = 'elan_parser_controlled_vocabularies'
 		end
 
+		#STUB
 		class ControlledVocabularyCvEntry < ActiveRecord::Base
 			self.table_name = 'elan_parser_controlled_vocabularies_cv_entries'
 		end
 
+		#STUB
 		class LexiconReference < ActiveRecord::Base
 			self.table_name = 'elan_parser_lexicon_references'
 		end
 
+		#STUB
 		class ExternalReference < ActiveRecord::Base
 			self.table_name = 'elan_parser_external_references'
 		end
 
+		#STUB
 		class AnnotationDocumentLinguisticType < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents_linguistic_types'
 		end
 
+		#STUB
 		class AnnotationDocumentLocale < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents_locales'
 		end
 
+		#STUB
 		class AnnotationDocumentConstraint < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents_constraints'
 		end
 
+		#STUB
 		class AnnotationControlledVocabularyDocument < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_controlled_vocabularies_documents'
 		end
 
+		#STUB
 		class AnnotationDocumentLexiconRef < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents_lexicon_refs'
 		end
 
+		#STUB
 		class AnnotationDocumentExternalref < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents_external_refs'
 		end
 	end
 end
-
-	#tier = ElanParser::DB::Tier.create(:linguistic_type_ref => "blah", :default_locale => "en", :tier_id => "blahs")
-
-#	annotation_document = ElanParser::AnnotationDocument.create(:author => "Aaron", :date => Date.new(2003,1,12))
-#	puts annotation_document.id
-
-#	ElanParser::AnnotationTier.create(:annotation_document => annotation_document, :tier => tier)
-
-	#ElanParser::Documents.create(:projects_id => ElanParser::Projects.create(:project_name => "blah", :description => "woot").id, :file_name => "test")
-
-
-	#ElanParser::Documents.all.each do |t|
-	#	puts ElanParser::Projects.find(t.id).description
-	#	puts t.file_name
-	#end

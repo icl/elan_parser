@@ -215,6 +215,8 @@ module ElanParser
 			attribute :date, DateTime, :tag => 'DATE'
 			attribute :format, String, :tag => 'FORMAT'
 			attribute :version, String, :tag => 'VERSION'
+			attribute :xmlns_xsi, String, :tag => 'xmlns:xsi'
+			attribute :xmlns_nonamespaceschemalocation, String, :tag => 'xsi:noNamespaceSchemaLocation'
 
 			has_one :header, Header
 			has_one :time_order, TimeOrder

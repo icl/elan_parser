@@ -2,6 +2,18 @@ require "spec_helper"
 require "factories/annotation_documents"
 
 describe ElanParser::DB do
+	before(:suite) do
+		DatabaseCleaner.strategy = :transaction
+		DatabaseCleaner.clean_with(:truncation)
+	end
+
+	before(:each) do
+		DatabaseCleaner.start
+	end
+
+	after(:each) do
+		DatabaseCleaner.clean
+	end
 
   before(:all) do
 		@annotation_document = Factory.build(:annotation_document)
@@ -11,14 +23,6 @@ describe ElanParser::DB do
 		@media_descriptor = Factory.build(:media_descriptor)
 		@header = Factory.build(:header)
   end
-
-	after(:all) do
-		@annotation_document.destroy
-		@document.destroy
-		@project.destroy
-		@media_descriptor.destroy
-		@header.destroy
-	end
 
 	it "Should save the annotation document to the database" do
 		@annotation_document.save

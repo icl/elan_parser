@@ -61,7 +61,12 @@ class ElanParser < ActiveRecord::Migration
 	end
 
 	create_table :elan_parser_time_orders do |t|
-	  	t.belongs_to :time_slot
+
+	end
+
+	create_table :elan_parser_time_orders_time_slots do |t|
+		t.belongs_to :time_slot
+		t.belongs_to :time_order
 	end
 
 	create_table :elan_parser_reference_annotations do |t|
@@ -170,6 +175,8 @@ class ElanParser < ActiveRecord::Migration
 		t.column :date, :datetime, :null => false
 		t.column :format, :string, :null => true
 		t.column :version, :string, :null => true
+		t.column :xmlns_xsi, :string, :null => false
+		t.column :xsi_no_name_space_schema_location, :string, :null => false
 
 		t.belongs_to :header
 		t.belongs_to :time_order
