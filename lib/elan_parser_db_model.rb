@@ -103,7 +103,9 @@ module ElanParser
 		class Annotation < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotations'
 
+			has_one :annotation_tier
 			has_one :tier, :through => :annotation_tier
+
 			belongs_to :alignable_annotation
 		end
 
@@ -115,12 +117,19 @@ module ElanParser
 			has_one :header
 			has_one :time_order
 
-			has_many :tiers, :through => :annotation_tier
+			has_many :annotation_document_tiers
+			has_many :tiers, :through => :annotation_document_tiers
+
+			has_many :annotation_document_linguistic_types
+			has_many :linguistic_types, :through => :annotation_document_linguistic_types
+
+			has_many :annotation_document_locales
+			has_many :locales, :through => :annotation_document_locales
+
+			has_many :annotation_document_constraints
+			has_many :constraints, :through => :annotation_document_constraints
 
 	## These relationships are not active. They are currently stubs.
-	#		has_many :linguistic_types
-	#		has_many :locales
-	#		has_many :constraints
 	#		has_many :controlled_vocabularies
 	#		has_many :lexicon_refs
 	#		has_many :external_refs
@@ -129,8 +138,20 @@ module ElanParser
 		class Tier < ActiveRecord::Base
 			self.table_name = 'elan_parser_tiers'
 
-			has_many :annotation_tiers, :through => :annotation_tier
+			has_many :annotation_tiers
+			has_many :annotations, :through => :annotation_tiers
+
+			has_many :annotation_document_tiers
+			has_many :annotation_documents, :through => :annotation_document_tiers
 		end
+
+		class AnnotationDocumentTier < ActiveRecord::Base
+			self.table_name = 'elan_parser_annotation_documents_tiers'
+
+			belongs_to :annotation_document
+			belongs_to :tier
+		end
+
 
 		class AnnotationTier < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotations_tiers'
@@ -143,16 +164,29 @@ module ElanParser
 		class LinguisticType < ActiveRecord::Base
 			self.table_name = 'elan_parser_linguistic_types'
 
+			has_many :annotation_document_linguistic_types
+			has_many :annotation_documents, :through => :annotation_document_linguistic_types
 		end
 
-		#STUB
+		class AnnotationDocumentLinguisticType < ActiveRecord::Base
+			self.table_name = 'elan_parser_annotation_documents_linguistic_types'
+
+			belongs_to :linguistic_type
+			belongs_to :annotation_document
+		end
+
 		class Locale < ActiveRecord::Base
 			self.table_name = 'elan_parser_locales'
+
+			has_many :annotation_document_locales
+			has_many :annotation_documents, :through => :annotation_document_locales
 		end
 
-		#STUB
 		class Constraint < ActiveRecord::Base
 			self.table_name = 'elan_parser_constraints'
+
+			has_many :annotation_document_constraints
+			has_many :annotation_documents, :through => :annotation_document_constraints
 		end
 
 		#STUB
@@ -181,18 +215,18 @@ module ElanParser
 		end
 
 		#STUB
-		class AnnotationDocumentLinguisticType < ActiveRecord::Base
-			self.table_name = 'elan_parser_annotation_documents_linguistic_types'
-		end
-
-		#STUB
 		class AnnotationDocumentLocale < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents_locales'
+
+			belongs_to :annotation_document
+			belongs_to :locale
 		end
 
-		#STUB
 		class AnnotationDocumentConstraint < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotation_documents_constraints'
+
+			belongs_to :annotation_document
+			belongs_to :constraint
 		end
 
 		#STUB

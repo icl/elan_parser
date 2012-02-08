@@ -13,13 +13,53 @@ module ElanParser
 				annotation_node = Nokogiri::XML::Node.new("ANNOTATION_DOCUMENT", @elan_parser_xml)
 
 				annotation_node["AUTHOR"] = annotation_document.author
-				annotation_node["DATE"] = annotation_document.date.to_s
+				annotation_node["DATE"] = DateTime.parse(annotation_document.date.to_s).to_s
 				annotation_node["FORMAT"] = annotation_document.format
 				annotation_node["VERSION"] = annotation_document.version
-				annotation_node["xmlns:xsi"] = annotation_document.xmlns_xsi
-				annotation_node["xsi:noNamespaceSchemaLocation"] = annotation_document.xsi_no_name_space_schema_location
+
+#				annotation_node["xmlns:xsi"] = "http://www.w3.org/2001/XMLSchema-instance"
+#				annotation_node["xsi:noNamespaceSchemaLocation"] = annotation_document.xsi_no_name_space_schema_location
 
 				@elan_parser_xml.add_child(annotation_node)
+			end
+
+			def linguistic_type(linguistic_types)
+				linguistic_types.each do |linguistic_type|
+					linguistic_type_node = Nokogiri::XML::Node.new("LINGUISTIC_TYPE", @elan_parser_xml)
+
+					linguistic_type_node["GRAPHIC_REFERENCES"] = linguistic_type.graphic_references.to_s
+					linguistic_type_node["LINGUISTIC_TYPE_ID"] = linguistic_type.linguistic_type_id
+					linguistic_type_node["TIME_ALIGNABLE"] = linguistic_type.time_alignable.to_s
+					linguistic_type_node["CONSTRAINTS"] = linguistic_type.constraints if linguistic_type.constraints
+					linguistic_type_node["CONTROLLED_VOCABULARY_REF"] = linguistic_type.controlled_vocabulary_ref if linguistic_type.controlled_vocabulary_ref
+					linguistic_type_node["EXT_REF"] = linguistic_type.ext_ref if linguistic_type.ext_ref
+					linguistic_type_node["LEXICON_REF"] = linguistic_type.lexicon_ref if linguistic_type.lexicon_ref
+
+					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(linguistic_type_node)
+				end
+			end
+
+			def locale(locales)
+				locales.each do |locale|
+					locale_node = Nokogiri::XML::Node.new("LOCALE", @elan_parser_xml)
+					
+					locale_node["LANGUAGE_CODE"] = locale.language_code
+					locale_node["COUNTRY_CODE"] = locale.country_code
+					locale_node["VARIANT"] = locale.variant if locale.variant
+
+					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(locale_node)
+				end
+			end
+
+			def constraint(constraints)
+				constraints.each do |constraint|
+					constraint_node = Nokogiri::XML::Node.new("CONSTRAINT", @elan_parser_xml)
+
+					constraint_node["STEREOTYPE"] = constraint.stereotype
+					constraint_node["DESCRIPTION"] = constraint.description
+
+					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(constraint_node)
+				end
 			end
 
 			def header(header)
@@ -67,7 +107,7 @@ module ElanParser
 			def time_slot(time_order_node, time_slot)
 				time_slot_node = Nokogiri::XML::Node.new("TIME_SLOT", @elan_parser_xml)
 
-				time_slot_node["TIME_SLOT_ID"] = time_slot.id.to_s
+				time_slot_node["TIME_SLOT_ID"] = "ts" + time_slot.id.to_s
 				time_slot_node["TIME_VALUE"] = time_slot.time_value.to_s
 
 				time_order_node.add_child(time_slot_node)
@@ -98,9 +138,9 @@ module ElanParser
 			def alignable_annotation(annotation_node, annotation)
 				alignable_annotation_node = Nokogiri::XML::Node.new("ALIGNABLE_ANNOTATION", @elan_parser_xml)
 
-				alignable_annotation_node["ANNOTATION_ID"] = annotation.alignable_annotation.id.to_s
-				alignable_annotation_node["TIME_SLOT_REF1"] = annotation.time_slot_ref1.id.to_s
-				alignable_annotation_node["TIME_SLOT_REF2"] = annotation.time_slot_ref2.id.to_s
+				alignable_annotation_node["ANNOTATION_ID"] = "a" + annotation.alignable_annotation.id.to_s
+				alignable_annotation_node["TIME_SLOT_REF1"] = "ts" + annotation.time_slot_ref1.id.to_s
+				alignable_annotation_node["TIME_SLOT_REF2"] = "ts" + annotation.time_slot_ref2.id.to_s
 
 				annotation_value_node = Nokogiri::XML::Node.new("ANNOTATION_VALUE", @elan_parser_xml)
 				annotation_value_node.content = annotation.alignable_annotation.annotation_value

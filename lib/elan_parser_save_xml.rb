@@ -2,42 +2,56 @@
 module ElanParser
 	module Xml
 		class Save
-			def initialize(happymapper_document, project)
+			def initialize(parsed_annotation_document, project)
+				annotation_document = create_annotation_document(parsed_annotation_document, project)
 
-				annotation_document = create_annotation_document(happymapper_document, project)
+				create_linguistic_type(parsed_annotation_document, annotation_document)
+				create_locale(parsed_annotation_document, annotation_document)
+				create_constraint(parsed_annotation_document, annotation_document)
 
-				media_descriptors = create_media_descriptors(happymapper_document)
-				header = create_header(happymapper_document)
-				properties = create_properties(happymapper_document)
+				media_descriptors = create_media_descriptors(parsed_annotation_document)
+				header = create_header(parsed_annotation_document)
+				properties = create_properties(parsed_annotation_document)
 				
 				#Create any new time slots, then assign them to the time order in this document.
-				time_slots = create_time_slots(happymapper_document)
-				create_time_orders(happymapper_document, time_slots)
-				create_annotations(happymapper_document, time_slots)
+				time_slots = create_time_slots(parsed_annotation_document)
+				create_time_orders(parsed_annotation_document, time_slots)
+				create_annotations(parsed_annotation_document, time_slots, annotation_document)
 			end
 
-			def create_annotations(doc, time_slots)
+			def create_annotations(doc, time_slots, annotation_document)
 				#Loop through the tiers, save them, then loop thru and save the annotations. Then link them to the tiers.
 				doc.tiers.each do |t|
 
 					#Create tier ActiveRecord object
 					tier = create_tier(t)
 
+					#Bind the annotation document and the tier
+					join_annotation_document_tier(tier, annotation_document)
+
 					#Loop through each annotation within the tier, save it, and link it.
 					t.annotations.each do |a|
-						a.alignable_annotations.each do |aa|
+						#puts a.alignable_annotations.inspect
 
+						a.alignable_annotations.each do |aa|
 							alignable_annotation = create_alignable_annotation(aa)
 
-							annotation = create_annotation(alignable_annotation)
+#							annotation = create_annotation(alignable_annotation)
 
-							join_annotation_tier(annotation, tier)
-
+#							join_annotation_tier(annotation, tier)
+#
 							#Tie the time slots and annotations together.
-							join_annotation_time_slot(time_slots, alignable_annotation, aa)
+#							join_annotation_time_slot(time_slots, alignable_annotation, aa)
 						end
 					end
 				end
+			end
+
+			def join_annotation_document_tier(tier, annotation_document)
+				ElanParser::DB::AnnotationDocumentTier.find_or_create_by_tier_id_and_annotation_document_id(
+					tier.id,
+					annotation_document.id
+				)
 			end
 
 			def join_annotation_time_slot(happymapper_time_slots, activerecord_alignable_annotation, happymapper_alignable_annotation)
@@ -51,6 +65,67 @@ module ElanParser
 			def create_annotation(happymapper_alignable_annotation)
 				annotation = ElanParser::DB::Annotation.create(
 					:alignable_annotation => happymapper_alignable_annotation
+				)
+			end
+
+			#Incomplete
+			def create_linguistic_type(parsed_annotation_document, annotation_document)
+				parsed_annotation_document.linguistic_types.each do |linguistic_type|
+					linguistic_type = ElanParser::DB::LinguisticType.create(
+						:graphic_references => linguistic_type.graphic_references.to_s,
+						:linguistic_type_id =>  linguistic_type.linguistic_type_id,
+						:time_alignable => linguistic_type.time_alignable,
+						:constraints => linguistic_type.constraints,
+						:controlled_vocabulary_ref => linguistic_type.controlled_vocabulary_ref,
+						:ext_ref => linguistic_type.ext_ref,
+						:lexicon_ref => linguistic_type.lexicon_ref
+					)
+
+					join_annotation_document_linguistic_type(annotation_document, linguistic_type)
+				end
+			end
+
+			def join_annotation_document_linguistic_type(annotation_document, linguistic_type)
+				ElanParser::DB::AnnotationDocumentLinguisticType.create(
+					:annotation_document => annotation_document,
+					:linguistic_type => linguistic_type
+				)
+			end
+
+			def create_locale(parsed_annotation_document, annotation_document)
+				parsed_annotation_document.locales.each do |locale|
+					locale = ElanParser::DB::Locale.create(
+						:language_code => locale.language_code,
+						:country_code => locale.country_code,
+						:variant => locale.variant
+					)
+
+					join_annotation_document_locale(annotation_document, locale)
+				end
+			end
+
+			def join_annotation_document_locale(annotation_document, locale)
+				ElanParser::DB::AnnotationDocumentLocale.create(
+					:annotation_document => annotation_document,
+					:locale => locale
+				)
+			end
+
+			def create_constraint(parsed_annotation_document, annotation_document)
+				parsed_annotation_document.constraints.each do |constraint|
+					constraint = ElanParser::DB::Constraint.create(
+						:stereotype => constraint.stereotype,
+						:description => constraint.description
+					)
+
+					join_annotation_document_constraint(annotation_document, constraint)
+				end
+			end
+
+			def join_annotation_document_constraint(annotation_document, constraint)
+				ElanParser::DB::AnnotationDocumentConstraint.create(
+					:annotation_document => annotation_document,
+					:constraint => constraint
 				)
 			end
 
@@ -78,7 +153,7 @@ module ElanParser
 
 			def create_alignable_annotation(happymapper_alignable_annotation)
 				alignable_annotation = ElanParser::DB::AlignableAnnotation.find_or_create_by_annotation_value(
-					:annotation_value => happymapper_alignable_annotation.value
+					:annotation_value => happymapper_alignable_annotation.annotation_value
 				)
 
 				return alignable_annotation
@@ -91,7 +166,7 @@ module ElanParser
 					:format => doc.format,
 					:version => doc.version,
 					:document => document,
-					:xmlns_xsi => doc.xmlnsxsi
+					:xsi_no_name_space_schema_location => doc.xmlns_nonamespaceschemalocation
 				)
 			end
 

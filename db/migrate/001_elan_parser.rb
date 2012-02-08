@@ -175,7 +175,6 @@ class ElanParser < ActiveRecord::Migration
 		t.column :date, :datetime, :null => false
 		t.column :format, :string, :null => true
 		t.column :version, :string, :null => true
-		t.column :xmlns_xsi, :string, :null => false
 		t.column :xsi_no_name_space_schema_location, :string, :null => false
 
 		t.belongs_to :header
@@ -200,7 +199,7 @@ class ElanParser < ActiveRecord::Migration
 
 	create_table :elan_parser_annotation_documents_constraints do |t|
 	  t.belongs_to :annotation_document
-	  t.belongs_to :contraint
+	  t.belongs_to :constraint
 	end
 
 	create_table :elan_parser_annotation_controlled_vocabularies_documents do |t|

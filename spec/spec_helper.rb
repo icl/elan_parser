@@ -1,6 +1,8 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'database_cleaner'
+require 'uri'
+require 'net/http'
 
 #require 'rspec'
 require File.expand_path('../../lib/elan_parser_happymapper.rb', __FILE__)

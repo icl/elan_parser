@@ -8,22 +8,23 @@ describe ElanParser::XML do
 	end
 
 		it "Should have a date in the ANNOTATION_DOCUMENT node" do
-			puts @eparser.date
+			DateTime.parse(@eparser.date.to_s).class.should be DateTime
+			(@eparser.xmlns_nonamespaceschemalocation =~ URI::regexp).nil?.should be false
 		end
 
 		it "Should have at least one media descriptor in the header" do
-			puts @eparser.header.media_descriptors[0].media_url
+			(@eparser.header.media_descriptors[0].media_url =~ URI::regexp).nil?.should be false
 		end
 
 		it "Should have a property with a value" do
-			puts @eparser.header.properties[0].name
+			@eparser.header.properties[0].name.to_s.length.should be > 0
 		end
 
 		it "Should have a time order with at least one time slot" do
-			puts @eparser.time_order.time_slots[0].time_value
+			@eparser.time_order.time_slots[0].time_value.class.should be Fixnum
 		end
 
 		it "Should have at least one tier, and one annotation" do
-			puts @eparser.tiers[0].annotations[0].alignable_annotations[0].annotation_value
+			@eparser.tiers[0].annotations[0].alignable_annotations[0].annotation_value.to_s.length.should be > 0
 		end
 end

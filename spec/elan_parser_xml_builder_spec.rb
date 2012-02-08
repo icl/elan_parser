@@ -15,17 +15,21 @@ describe ElanParser::Xml::Build do
 		DatabaseCleaner.clean
 	end
 	
-	before(:all) do
-		@annotation_document = Factory.build(:annotation_document)
-		@document = Factory.build(:document)
-		@project = Factory.build(:project)
-		@property = Factory.build(:property)
-		@media_descriptor = Factory.build(:media_descriptor)
-		@header = Factory.build(:header)
-		@time_slot_a = Factory.build(:time_slot_b)
-		@time_slot_b = Factory.build(:time_slot_a)
-		@tier = Factory.build(:tier)
-		@alignable_annotation_time_slot = Factory.build(:alignable_annotation_time_slot)
+	before(:each) do
+		@annotation_document = Factory.create(:annotation_document)
+		@document = Factory.create(:document)
+		@project = Factory.create(:project)
+		@property = Factory.create(:property)
+		@media_descriptor = Factory.create(:media_descriptor)
+		@header = Factory.create(:header)
+		@time_slot_a = Factory.create(:time_slot)
+		@time_slot_b = Factory.create(:time_slot)
+		@tier = Factory.create(:tier)
+		@alignable_annotation_time_slot_a = Factory.create(:alignable_annotation_time_slot)
+		@alignable_annotation_time_slot_b = Factory.create(:alignable_annotation_time_slot)
+		@linguistic_type = Factory.create(:linguistic_type)
+		@locale = Factory.create(:locale)
+		@constraint = Factory.create(:constraint)
 
 		xml_doc = ElanParser::Xml::Build.new
 	end
@@ -47,9 +51,17 @@ describe ElanParser::Xml::Build do
 
 		xml_doc.time_order(time_slots)
 
-		alignable_annotation_time_slots = Array.[](@alignable_annotation_time_slot, @alignable_annotation_time_slot)
+		alignable_annotation_time_slots = Array.[](@alignable_annotation_time_slot_a, @alignable_annotation_time_slot_b)
 		xml_doc.tier(@tier, alignable_annotation_time_slots)
 
-		puts xml_doc.elan_parser_xml.to_xml
+		xml_doc.linguistic_type(Array.[](@linguistic_type))
+		xml_doc.locale(Array.[](@locale))
+		xml_doc.constraint(Array.[](@constraint))
+
+		#It should validate against the elan XSD
+		xsd_document = Net::HTTP.get(URI.parse("http://www.mpi.nl/tools/elan/EAFv2.7.xsd"))
+		xsd = Nokogiri::XML::Schema(xsd_document)
+		#puts xml_doc.elan_parser_xml
+		xsd.validate(xml_doc.elan_parser_xml).should be_empty
 	end
 end

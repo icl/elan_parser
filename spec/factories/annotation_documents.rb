@@ -6,7 +6,6 @@ Factory.define :annotation_document, :class => ElanParser::DB::AnnotationDocumen
 	f.date Date.new(2012,1,26)
 	f.format "2.7"
 	f.version "2.7"
-	f.xmlns_xsi "http://www.w3.org/2001/XMLSchema-instance"
 	f.xsi_no_name_space_schema_location "http://www.mpi.nl/tools/elan/EAFv2.7.xsd"
 end
 
@@ -22,8 +21,8 @@ end
 Factory.define :tier, :class => ElanParser::DB::Tier do |f|
 	f.participant "Test Participant"
 	f.annotator "Test Annotator"
-	f.linguistic_type_ref "en-US"
-	f.default_locale "en-US"
+	f.linguistic_type_ref "default-lt"
+	f.default_locale "en"
 	f.tier_id "Test Marking"
 end
 
@@ -43,26 +42,57 @@ Factory.define :media_descriptor, :class => ElanParser::DB::MediaDescriptor do |
 	f.time_origin "123456"
 end
 
-Factory.define :time_slot_a, :class => ElanParser::DB::TimeSlot do |f|
-	f.id "1"
-	f.time_value "2600"
-end
+FactoryGirl.define do 
+	factory :time_slot, :class => ElanParser::DB::TimeSlot do 
+		sequence(:time_value) {|n| n}
+	end
 
-Factory.define :time_slot_b, :class => ElanParser::DB::TimeSlot do |f|
-	f.id "2"
-	f.time_value "2700"
+	factory :alignable_annotation, :class => ElanParser::DB::AlignableAnnotation do
+		sequence(:annotation_value) {|n| n}
+	end
 end
 
 Factory.define :annotation, :class => ElanParser::DB::Annotation do |f|
 
 end
 
-Factory.define :alignable_annotation, :class => ElanParser::DB::AlignableAnnotation do |f|
-	f.annotation_value "TEST ANNOTATION VALUE"
-end
+#Factory.define :alignable_annotation, :class => ElanParser::DB::AlignableAnnotation do |f|
+#	f.annotation_value "TEST ANNOTATION VALUE"
+#end
 
 Factory.define :alignable_annotation_time_slot, :class => ElanParser::DB::AlignableAnnotationTimeSlot do |f|
 	f.association :alignable_annotation
-	f.association :time_slot_ref1, :factory => :time_slot_a
-	f.association :time_slot_ref2, :factory => :time_slot_b
+	f.association :time_slot_ref1, :factory => :time_slot
+	f.association :time_slot_ref2, :factory => :time_slot
+end
+
+Factory.define :linguistic_type, :class => ElanParser::DB::LinguisticType do |f|
+	f.linguistic_type_id "default-lt"
+	f.time_alignable "true"
+	f.graphic_references "false"
+end
+
+Factory.define :annotation_document_linguistic_type, :class => ElanParser::DB::AnnotationDocumentLinguisticType do |f|
+	f.association :annotation_document
+	f.association :linguistic_type
+end
+
+Factory.define :locale, :class => ElanParser::DB::Locale do |f|
+	f.country_code "US"
+	f.language_code "US"
+end
+
+Factory.define :annotation_document_locale, :class => ElanParser::DB::AnnotationDocumentLocale do |f|
+	f.association :annotation_document
+	f.association :locale
+end
+
+Factory.define :constraint, :class => ElanParser::DB::Constraint do |f|
+	f.description "Constraint Description"
+	f.stereotype "Time_Subdivision"
+end
+
+Factory.define :annotation_document_constraint, :class => ElanParser::DB::AnnotationDocumentConstraint do |f|
+	f.association :annotation_document
+	f.association :constraint
 end
