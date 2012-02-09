@@ -22,7 +22,8 @@ module ElanParser
 		class MediaDescriptor < ActiveRecord::Base
 			self.table_name = 'elan_parser_media_descriptors'
 
-			has_one :header
+			has_many :header_media_descriptors
+			has_many :media_descriptors, :through => :header_media_descriptors
 		end
 
 		class Property < ActiveRecord::Base
@@ -40,7 +41,12 @@ module ElanParser
 			self.table_name = 'elan_parser_headers'
 
 			belongs_to :annotation_document
-			has_many :media_descriptors, :through => :header_media_descriptor
+
+			has_many :header_media_descriptors
+			has_many :media_descriptors, :through => :header_media_descriptors
+
+			has_many :header_properties
+			has_many :properties, :through => :header_properties
 		end
 
 		class HeaderMediaDescriptor < ActiveRecord::Base
@@ -57,20 +63,25 @@ module ElanParser
 
 		class HeaderProperty < ActiveRecord::Base
 			self.table_name = 'elan_parser_headers_properties'
+
+			belongs_to :header
+			belongs_to :property
 		end
 
 		class TimeSlot < ActiveRecord::Base
 			self.table_name = 'elan_parser_time_slots'
 
 			has_one :alignable_annotation_time_slot
-			has_one :time_order, :through => :time_order_time_slot
+			has_one :time_order
 		end
 
 		class TimeOrder < ActiveRecord::Base
 			self.table_name = 'elan_parser_time_orders'
 
 			belongs_to :annotation_document
-			has_many :time_slot, :through => :time_order_time_slot
+
+			has_many :time_order_time_slots
+			has_many :time_slots, :through => :time_order_time_slots
 		end
 
 		class TimeOrderTimeSlot < ActiveRecord::Base
@@ -137,7 +148,6 @@ module ElanParser
 
 		class Tier < ActiveRecord::Base
 			self.table_name = 'elan_parser_tiers'
-
 			has_many :annotation_tiers
 			has_many :annotations, :through => :annotation_tiers
 

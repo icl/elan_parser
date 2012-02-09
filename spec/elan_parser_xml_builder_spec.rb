@@ -45,14 +45,14 @@ describe ElanParser::Xml::Build do
 		media_descriptors = Array.[](@media_descriptor, @media_descriptor)
 		xml_doc.media_descriptors(media_descriptors)
 
-		xml_doc.property(@property)
+		xml_doc.properties(Array.[](@property))
 
 		time_slots = Array.[](@time_slot_a, @time_slot_b)
 
 		xml_doc.time_order(time_slots)
 
 		alignable_annotation_time_slots = Array.[](@alignable_annotation_time_slot_a, @alignable_annotation_time_slot_b)
-		xml_doc.tier(@tier, alignable_annotation_time_slots)
+		xml_doc.tiers(Array.[](@tier))
 
 		xml_doc.linguistic_type(Array.[](@linguistic_type))
 		xml_doc.locale(Array.[](@locale))

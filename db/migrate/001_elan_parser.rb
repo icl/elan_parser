@@ -39,6 +39,8 @@ class ElanParser < ActiveRecord::Migration
 		#Deprecated in favor of media_descriptors
 		t.column :media_file, :string, :null => true
 		t.column :time_units, :string, :null => false
+
+		t.belongs_to :annotation_document
 	end
 
 	create_table :elan_parser_headers_media_descriptors do |t|
@@ -53,7 +55,7 @@ class ElanParser < ActiveRecord::Migration
 
 	create_table :elan_parser_headers_properties do |t|
 	  t.belongs_to :header
-	  t.belongs_to :linked_file_descriptor
+	  t.belongs_to :property
 	end
 
 	create_table :elan_parser_time_slots do |t|
@@ -61,7 +63,7 @@ class ElanParser < ActiveRecord::Migration
 	end
 
 	create_table :elan_parser_time_orders do |t|
-
+		t.belongs_to :annotation_document
 	end
 
 	create_table :elan_parser_time_orders_time_slots do |t|
@@ -177,8 +179,6 @@ class ElanParser < ActiveRecord::Migration
 		t.column :version, :string, :null => true
 		t.column :xsi_no_name_space_schema_location, :string, :null => false
 
-		t.belongs_to :header
-		t.belongs_to :time_order
 		t.belongs_to :document
 	end
 

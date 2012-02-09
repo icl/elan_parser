@@ -9,6 +9,20 @@ module ElanParser
 				@elan_parser_xml = Nokogiri::XML::Document.new
 			end
 
+			def build_eaf_document(activerecord_document)
+				annotation_document = ElanParser::DB::AnnotationDocument.find_by_document_id(
+					activerecord_document.id
+				)
+
+				#Build out each module of the XML document
+				annotation_document(annotation_document)
+				header(annotation_document.header)
+				media_descriptors(annotation_document.header.media_descriptors)
+				properties(annotation_document.header.properties)
+				time_order(annotation_document.time_order.time_slots)
+				tiers(annotation_document.tiers)	
+			end
+
 			def annotation_document(annotation_document)
 				annotation_node = Nokogiri::XML::Node.new("ANNOTATION_DOCUMENT", @elan_parser_xml)
 
@@ -85,13 +99,15 @@ module ElanParser
 				end
 			end
 
-			def property(property)
+			def properties(properties)
+				properties.each do |property|
 					property_node = Nokogiri::XML::Node.new("PROPERTY", @elan_parser_xml)
 
 					property_node["NAME"] = property.name
 					property_node.content = property.value
 
 					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT/HEADER").first.add_child(property_node)
+				end
 			end
 
 			def time_order(time_slots)
@@ -113,24 +129,26 @@ module ElanParser
 				time_order_node.add_child(time_slot_node)
 			end
 
-			def tier(tier, alignable_annotation_time_slots)
-				tier_node = Nokogiri::XML::Node.new("TIER", @elan_parser_xml)
+			def tiers(tiers)
+				tiers.each do |tier|
+					tier_node = Nokogiri::XML::Node.new("TIER", @elan_parser_xml)
 
-				tier_node["DEFAULT_LOCALE"] = tier.default_locale
-				tier_node["LINGUISTIC_TYPE_REF"] = tier.linguistic_type_ref
-				tier_node["TIER_ID"] = tier.tier_id
+					tier_node["DEFAULT_LOCALE"] = tier.default_locale
+					tier_node["LINGUISTIC_TYPE_REF"] = tier.linguistic_type_ref
+					tier_node["TIER_ID"] = tier.tier_id
 
-				alignable_annotation_time_slots.each do |alignable_annotation_time_slot|
-					annotation(tier_node, alignable_annotation_time_slot)
+					tier.annotations.each do |annotation|
+						annotation(tier_node, annotation)
+					end
+
+					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(tier_node)
 				end
-
-				@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(tier_node)
 			end
 
-			def annotation(tier_node, alignable_annotation_time_slot)
+			def annotation(tier_node, annotation)
 				annotation_node = Nokogiri::XML::Node.new("ANNOTATION", @elan_parser_xml)
 
-				alignable_annotation(annotation_node, alignable_annotation_time_slot)
+				alignable_annotation(annotation_node, annotation)
 
 				tier_node.add_child(annotation_node)
 			end
@@ -139,8 +157,8 @@ module ElanParser
 				alignable_annotation_node = Nokogiri::XML::Node.new("ALIGNABLE_ANNOTATION", @elan_parser_xml)
 
 				alignable_annotation_node["ANNOTATION_ID"] = "a" + annotation.alignable_annotation.id.to_s
-				alignable_annotation_node["TIME_SLOT_REF1"] = "ts" + annotation.time_slot_ref1.id.to_s
-				alignable_annotation_node["TIME_SLOT_REF2"] = "ts" + annotation.time_slot_ref2.id.to_s
+				alignable_annotation_node["TIME_SLOT_REF1"] = "ts" + annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref1.id.to_s
+				alignable_annotation_node["TIME_SLOT_REF2"] = "ts" + annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref2.id.to_s
 
 				annotation_value_node = Nokogiri::XML::Node.new("ANNOTATION_VALUE", @elan_parser_xml)
 				annotation_value_node.content = annotation.alignable_annotation.annotation_value

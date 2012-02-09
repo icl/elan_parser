@@ -9,13 +9,16 @@ module ElanParser
 				create_locale(parsed_annotation_document, annotation_document)
 				create_constraint(parsed_annotation_document, annotation_document)
 
+				header = create_header(parsed_annotation_document, annotation_document)
 				media_descriptors = create_media_descriptors(parsed_annotation_document)
-				header = create_header(parsed_annotation_document)
+				join_header_media_descriptors(header, media_descriptors)
+
 				properties = create_properties(parsed_annotation_document)
+				join_header_properties(header, properties)
 				
 				#Create any new time slots, then assign them to the time order in this document.
 				time_slots = create_time_slots(parsed_annotation_document)
-				create_time_orders(parsed_annotation_document, time_slots)
+				create_time_orders(parsed_annotation_document, time_slots, annotation_document)
 				create_annotations(parsed_annotation_document, time_slots, annotation_document)
 			end
 
@@ -36,12 +39,12 @@ module ElanParser
 						a.alignable_annotations.each do |aa|
 							alignable_annotation = create_alignable_annotation(aa)
 
-#							annotation = create_annotation(alignable_annotation)
+							annotation = create_annotation(alignable_annotation)
 
-#							join_annotation_tier(annotation, tier)
+							join_annotation_tier(annotation, tier)
 #
 							#Tie the time slots and annotations together.
-#							join_annotation_time_slot(time_slots, alignable_annotation, aa)
+							join_annotation_time_slot(time_slots, alignable_annotation, aa)
 						end
 					end
 				end
@@ -202,7 +205,7 @@ module ElanParser
 
 				doc.header.media_descriptors.each_with_index do |m, index|
 					media_descriptors[index] = ElanParser::DB::MediaDescriptor.find_or_create_by_media_url(
-						m.media_url,
+						File.basename(m.media_url),
 						:relative_media_url => m.media_url,
 						:mime_type => m.mime_type,
 						:time_origin => m.time_origin,
@@ -213,10 +216,20 @@ module ElanParser
 				return media_descriptors
 			end
 
-			def create_header(doc)
+			def join_header_media_descriptors(header, media_descriptors)
+				media_descriptors.each do |md|
+					ElanParser::DB::HeaderMediaDescriptor.create(
+						:header => header,
+						:media_descriptor => md
+					)
+				end
+			end
+
+			def create_header(doc, annotation_document)
 				header = ElanParser::DB::Header.find_or_create_by_time_units(
 					doc.header.time_units,
-					:media_file => doc.header.media_file
+					:media_file => doc.header.media_file,
+					:annotation_document => annotation_document
 				)
 
 				return header
@@ -236,9 +249,20 @@ module ElanParser
 				return properties
 			end
 
-			def create_time_orders(doc, time_slots)
+			def join_header_properties(header, properties)
+				properties.each do |property|
+					ElanParser::DB::HeaderProperty.create(
+						:header => header,
+						:property => property
+					)
+				end
+			end
+
+			def create_time_orders(doc, time_slots, annotation_document)
 				#Create our time order and then link the time order with the time slots
-				time_order = ElanParser::DB::TimeOrder.create()
+				time_order = ElanParser::DB::TimeOrder.create(
+					:annotation_document => annotation_document
+				)
 
 				time_slots.each do |time_slot_ref, time_slot|
 					ElanParser::DB::TimeOrderTimeSlot.create(
