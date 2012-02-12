@@ -10,11 +10,15 @@ module ElanParser
 			self.table_name = 'elan_parser_documents'
 
 			belongs_to :project
+      belongs_to :user
+
 			has_one :annotation_document
 		end
 
 		class Project < ActiveRecord::Base
 			self.table_name = 'elan_parser_projects'
+
+      belongs_to :user
 
 			has_one :document
 		end

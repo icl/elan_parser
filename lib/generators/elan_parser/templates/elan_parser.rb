@@ -5,12 +5,15 @@ class ElanParser < ActiveRecord::Migration
 
 	  t.column :file_name, :string, :null => false
 	  t.belongs_to :project
+    t.belongs_to :user
 	end
 	
 	create_table :elan_parser_projects do |t|
 	  t.timestamps
 	  t.column :project_name, :string, :null => false
 	  t.column :description, :text, :null => false
+
+    t.belongs_to :user
 	end
 	
 	create_table :elan_parser_media_descriptors do |t|
