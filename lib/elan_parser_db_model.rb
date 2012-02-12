@@ -2,9 +2,9 @@ require 'active_record'
 
 module ElanParser
 	module DB
-		class Connect
-			ActiveRecord::Base.establish_connection(YAML::load(File.open('db/database.yml')))
-		end
+#		class Connect
+#			ActiveRecord::Base.establish_connection(YAML::load(File.open('db/database.yml')))
+#		end
 
 		class Document < ActiveRecord::Base
 			self.table_name = 'elan_parser_documents'

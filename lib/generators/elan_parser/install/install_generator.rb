@@ -2,7 +2,7 @@ require 'rails/generators/migration'
 
 module ElanParser
  module Generators
-  class InstallGenerator < Rails::Generators::Base
+  class InstallGenerator < ::Rails::Generators::Base
     source_root File.expand_path('../../db/migrate', __FILE__)
     desc "Add the migrations"
 
