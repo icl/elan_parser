@@ -8,24 +8,26 @@ module ElanParser
 
 		class Document < ActiveRecord::Base
 			self.table_name = 'elan_parser_documents'
+      validates :file_name, :presence => true
 
       belongs_to :user
 
-			has_one :annotation_document
+			has_one :annotation_document, :dependent => :destroy
 
       has_many :document_project
-      has_many :projects, :through => :document_project
+      has_many :projects, :through => :document_project, :dependent => :destroy
 		end
 
 		class Project < ActiveRecord::Base
 			self.table_name = 'elan_parser_projects'
+      validates :project_name, :description, :presence => true
 
       belongs_to :user
 
-			has_one :document
+			has_one :document, :dependent => :destroy
 
       has_many :document_project
-      has_many :documents, :through => :document_project
+      has_many :documents, :through => :document_project, :dependent => :destroy
 		end
 
     class DocumentProject < ActiveRecord::Base
@@ -39,13 +41,13 @@ module ElanParser
 			self.table_name = 'elan_parser_media_descriptors'
 
 			has_many :header_media_descriptors
-			has_many :media_descriptors, :through => :header_media_descriptors
+			has_many :media_descriptors, :through => :header_media_descriptors, :dependent => :destroy
 		end
 
 		class Property < ActiveRecord::Base
 			self.table_name = 'elan_parser_properties'
 
-			has_one :header
+			has_one :header, :dependent => :destroy
 		end
 
 		#STUB
@@ -59,10 +61,10 @@ module ElanParser
 			belongs_to :annotation_document
 
 			has_many :header_media_descriptors
-			has_many :media_descriptors, :through => :header_media_descriptors
+			has_many :media_descriptors, :through => :header_media_descriptors, :dependent => :destroy
 
 			has_many :header_properties
-			has_many :properties, :through => :header_properties
+			has_many :properties, :through => :header_properties, :dependent => :destroy
 		end
 
 		class HeaderMediaDescriptor < ActiveRecord::Base
@@ -87,8 +89,8 @@ module ElanParser
 		class TimeSlot < ActiveRecord::Base
 			self.table_name = 'elan_parser_time_slots'
 
-			has_one :alignable_annotation_time_slot
-			has_one :time_order
+			has_one :alignable_annotation_time_slot, :dependent => :destroy
+			has_one :time_order, :dependent => :destroy
 		end
 
 		class TimeOrder < ActiveRecord::Base
@@ -97,7 +99,7 @@ module ElanParser
 			belongs_to :annotation_document
 
 			has_many :time_order_time_slots
-			has_many :time_slots, :through => :time_order_time_slots
+			has_many :time_slots, :through => :time_order_time_slots, :dependent => :destroy
 		end
 
 		class TimeOrderTimeSlot < ActiveRecord::Base
@@ -115,8 +117,8 @@ module ElanParser
 		class AlignableAnnotation < ActiveRecord::Base
 			self.table_name = 'elan_parser_alignable_annotations'
 
-			has_one :alignable_annotation_time_slot
-			has_one :annotation
+			has_one :alignable_annotation_time_slot, :dependent => :destroy
+			has_one :annotation, :dependent => :destroy
 		end
 
 		class AlignableAnnotationTimeSlot < ActiveRecord::Base
@@ -130,8 +132,8 @@ module ElanParser
 		class Annotation < ActiveRecord::Base
 			self.table_name = 'elan_parser_annotations'
 
-			has_one :annotation_tier
-			has_one :tier, :through => :annotation_tier
+			has_one :annotation_tier, :dependent => :destroy
+			has_one :tier, :through => :annotation_tier, :dependent => :destroy
 
 			belongs_to :alignable_annotation
 		end
@@ -141,20 +143,20 @@ module ElanParser
 
 			belongs_to :document
 
-			has_one :header
-			has_one :time_order
+			has_one :header, :dependent => :destroy
+			has_one :time_order, :dependent => :destroy
 
 			has_many :annotation_document_tiers
-			has_many :tiers, :through => :annotation_document_tiers
+			has_many :tiers, :through => :annotation_document_tiers, :dependent => :destroy
 
 			has_many :annotation_document_linguistic_types
-			has_many :linguistic_types, :through => :annotation_document_linguistic_types
+			has_many :linguistic_types, :through => :annotation_document_linguistic_types, :dependent => :destroy
 
 			has_many :annotation_document_locales
-			has_many :locales, :through => :annotation_document_locales
+			has_many :locales, :through => :annotation_document_locales, :dependent => :destroy
 
 			has_many :annotation_document_constraints
-			has_many :constraints, :through => :annotation_document_constraints
+			has_many :constraints, :through => :annotation_document_constraints, :dependent => :destroy
 
 	## These relationships are not active. They are currently stubs.
 	#		has_many :controlled_vocabularies
@@ -165,10 +167,10 @@ module ElanParser
 		class Tier < ActiveRecord::Base
 			self.table_name = 'elan_parser_tiers'
 			has_many :annotation_tiers
-			has_many :annotations, :through => :annotation_tiers
+			has_many :annotations, :through => :annotation_tiers, :dependent => :destroy
 
 			has_many :annotation_document_tiers
-			has_many :annotation_documents, :through => :annotation_document_tiers
+			has_many :annotation_documents, :through => :annotation_document_tiers, :dependent => :destroy
 		end
 
 		class AnnotationDocumentTier < ActiveRecord::Base
@@ -191,7 +193,7 @@ module ElanParser
 			self.table_name = 'elan_parser_linguistic_types'
 
 			has_many :annotation_document_linguistic_types
-			has_many :annotation_documents, :through => :annotation_document_linguistic_types
+			has_many :annotation_documents, :through => :annotation_document_linguistic_types, :dependent => :destroy
 		end
 
 		class AnnotationDocumentLinguisticType < ActiveRecord::Base
@@ -205,14 +207,14 @@ module ElanParser
 			self.table_name = 'elan_parser_locales'
 
 			has_many :annotation_document_locales
-			has_many :annotation_documents, :through => :annotation_document_locales
+			has_many :annotation_documents, :through => :annotation_document_locales, :dependent => :destroy
 		end
 
 		class Constraint < ActiveRecord::Base
 			self.table_name = 'elan_parser_constraints'
 
 			has_many :annotation_document_constraints
-			has_many :annotation_documents, :through => :annotation_document_constraints
+			has_many :annotation_documents, :through => :annotation_document_constraints, :dependent => :destroy
 		end
 
 		#STUB

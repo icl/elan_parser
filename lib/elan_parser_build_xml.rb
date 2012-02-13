@@ -21,6 +21,10 @@ module ElanParser
 				properties(annotation_document.header.properties)
 				time_order(annotation_document.time_order.time_slots)
 				tiers(annotation_document.tiers)	
+        linguistic_type(annotation_document.linguistic_types)
+        locale(annotation_document.locales)
+        constraint(annotation_document.constraints)
+
 			end
 
 			def annotation_document(annotation_document)

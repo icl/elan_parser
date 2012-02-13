@@ -142,8 +142,8 @@ module ElanParser
 
 			def create_tier(happymapper_tier)
 				#Create tier ActiveRecord object
-					tier = ElanParser::DB::Tier.find_or_create_by_tier_id(
-					happymapper_tier.tier_id,
+					tier = ElanParser::DB::Tier.create(
+					:tier_id => happymapper_tier.tier_id,
 					:participant => happymapper_tier.participant,
 					:annotator => happymapper_tier.annotator,
 					:linguistic_type_ref => happymapper_tier.linguistic_type_ref,
@@ -206,7 +206,7 @@ module ElanParser
 				doc.header.media_descriptors.each_with_index do |m, index|
 					media_descriptors[index] = ElanParser::DB::MediaDescriptor.find_or_create_by_media_url(
 						File.basename(m.media_url),
-						:relative_media_url => m.media_url,
+						:relative_media_url => File.basename(m.media_url),
 						:mime_type => m.mime_type,
 						:time_origin => m.time_origin,
 						:extracted_from => m.extracted_from
@@ -226,8 +226,8 @@ module ElanParser
 			end
 
 			def create_header(doc, annotation_document)
-				header = ElanParser::DB::Header.find_or_create_by_time_units(
-					doc.header.time_units,
+				header = ElanParser::DB::Header.create(
+					:time_units => doc.header.time_units,
 					:media_file => doc.header.media_file,
 					:annotation_document => annotation_document
 				)
