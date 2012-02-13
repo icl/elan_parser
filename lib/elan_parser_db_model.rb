@@ -9,10 +9,12 @@ module ElanParser
 		class Document < ActiveRecord::Base
 			self.table_name = 'elan_parser_documents'
 
-			belongs_to :project
       belongs_to :user
 
 			has_one :annotation_document
+
+      has_many :document_project
+      has_many :projects, :through => :document_project
 		end
 
 		class Project < ActiveRecord::Base
@@ -21,7 +23,17 @@ module ElanParser
       belongs_to :user
 
 			has_one :document
+
+      has_many :document_project
+      has_many :documents, :through => :document_project
 		end
+
+    class DocumentProject < ActiveRecord::Base
+      self.table_name = 'elan_parser_documents_projects'
+
+      belongs_to :document
+      belongs_to :project
+    end
 
 		class MediaDescriptor < ActiveRecord::Base
 			self.table_name = 'elan_parser_media_descriptors'
