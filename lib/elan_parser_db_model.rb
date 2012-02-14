@@ -47,7 +47,7 @@ module ElanParser
 		class Property < ActiveRecord::Base
 			self.table_name = 'elan_parser_properties'
 
-			has_one :header, :dependent => :destroy
+			has_one :header, :through => 'header_property'
 		end
 
 		#STUB
