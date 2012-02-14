@@ -6,3 +6,4 @@ pkg/*
 *~
 db/development.sqlite3
 .DS_Store
+db/database.yml

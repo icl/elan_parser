@@ -17,8 +17,6 @@ describe ElanParser::Xml::Build do
 	
 	before(:each) do
 		@annotation_document = Factory.create(:annotation_document)
-		@document = Factory.create(:document)
-		@project = Factory.create(:project)
 		@property = Factory.create(:property)
 		@media_descriptor = Factory.create(:media_descriptor)
 		@header = Factory.create(:header)

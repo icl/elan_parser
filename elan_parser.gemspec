@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
 
   # s.add_runtime_dependency "rest-client"
   s.add_runtime_dependency "happymapper"
+  s.add_runtime_dependency "pg"
   s.add_runtime_dependency "nokogiri"
   s.add_runtime_dependency "activerecord"
 end

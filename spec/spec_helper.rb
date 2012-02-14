@@ -3,6 +3,9 @@ require 'bundler/setup'
 require 'database_cleaner'
 require 'uri'
 require 'net/http'
+require 'active_record'
+
+ActiveRecord::Base.establish_connection(YAML::load(File.open('db/database.yml')))
 
 #require 'rspec'
 require File.expand_path('../../lib/elan_parser_happymapper.rb', __FILE__)

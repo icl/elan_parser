@@ -2,8 +2,8 @@
 module ElanParser
 	module Xml
 		class Save
-			def initialize(parsed_annotation_document, project)
-				annotation_document = create_annotation_document(parsed_annotation_document, project)
+			def initialize(parsed_annotation_document, file_name)
+				annotation_document = create_annotation_document(parsed_annotation_document, file_name)
 
 				create_linguistic_type(parsed_annotation_document, annotation_document)
 				create_locale(parsed_annotation_document, annotation_document)
@@ -162,13 +162,13 @@ module ElanParser
 				return alignable_annotation
 			end
 
-			def create_annotation_document(doc, document)
+			def create_annotation_document(doc, file_name)
 				ElanParser::DB::AnnotationDocument.create(
 					:author => doc.author,
 					:date => doc.date,
 					:format => doc.format,
 					:version => doc.version,
-					:document => document,
+					:file_name => file_name,
 					:xsi_no_name_space_schema_location => doc.xmlns_nonamespaceschemalocation
 				)
 			end
@@ -188,16 +188,6 @@ module ElanParser
 				end
 
 				return tiers
-			end
-						
-
-			def create_load_project(project)
-				ar_project = ElanParser::DB::Project.find_or_create_by_project_name(
-					project["name"],
-					:description => project["description"]
-				)
-
-				return ar_project
 			end
 
 			def create_media_descriptors(doc)

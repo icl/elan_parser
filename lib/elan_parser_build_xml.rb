@@ -9,9 +9,9 @@ module ElanParser
 				@elan_parser_xml = Nokogiri::XML::Document.new
 			end
 
-			def build_eaf_document(activerecord_document)
-				annotation_document = ElanParser::DB::AnnotationDocument.find_by_document_id(
-					activerecord_document.id
+			def build_eaf_document(file_name)
+				annotation_document = ElanParser::DB::AnnotationDocument.find_by_file_name(
+					file_name
 				)
 
 				#Build out each module of the XML document

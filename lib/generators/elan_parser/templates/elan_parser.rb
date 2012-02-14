@@ -1,25 +1,5 @@
 class ElanParser < ActiveRecord::Migration
   def self.up
-	create_table :elan_parser_documents do |t|
-	  t.timestamps
-
-	  t.column :file_name, :string, :null => false
-    t.belongs_to :user
-	end
-
-  create_table :elan_parser_documents_projects do |t|
-    t.belongs_to :document
-    t.belongs_to :project
-  end
-	
-	create_table :elan_parser_projects do |t|
-	  t.timestamps
-	  t.column :project_name, :string, :null => false
-	  t.column :description, :text, :null => false
-
-    t.belongs_to :user
-	end
-	
 	create_table :elan_parser_media_descriptors do |t|
 		t.column :media_url, :string, :null => false
 		t.column :relative_media_url, :string, :null => false
@@ -185,8 +165,7 @@ class ElanParser < ActiveRecord::Migration
 		t.column :format, :string, :null => true
 		t.column :version, :string, :null => true
 		t.column :xsi_no_name_space_schema_location, :string, :null => false
-
-		t.belongs_to :document
+		t.column :file_name, :string, :null => false
 	end
 
 	create_table :elan_parser_annotation_documents_tiers do |t|

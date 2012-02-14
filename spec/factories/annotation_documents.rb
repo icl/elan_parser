@@ -6,16 +6,8 @@ Factory.define :annotation_document, :class => ElanParser::DB::AnnotationDocumen
 	f.date Date.new(2012,1,26)
 	f.format "2.7"
 	f.version "2.7"
+	f.file_name "elan_test.xml"
 	f.xsi_no_name_space_schema_location "http://www.mpi.nl/tools/elan/EAFv2.7.xsd"
-end
-
-Factory.define :document, :class => ElanParser::DB::Document do |f|
-	f.file_name "something.xml"
-end
-
-Factory.define :project, :class => ElanParser::DB::Project do |f|
-	f.project_name "Test Project"
-	f.description "This is a project description used for testing"
 end
 
 Factory.define :tier, :class => ElanParser::DB::Tier do |f|

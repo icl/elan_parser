@@ -17,8 +17,6 @@ describe ElanParser::DB do
 
   before(:all) do
 		@annotation_document = Factory.build(:annotation_document)
-		@document = Factory.build(:document)
-		@project = Factory.build(:project)
 
 		@media_descriptor = Factory.build(:media_descriptor)
 		@header = Factory.build(:header)
@@ -28,19 +26,6 @@ describe ElanParser::DB do
 		@annotation_document.save
 
 		@annotation_document.id.should be > 0
-	end
-
-	it "Should save the project to the database" do
-		@project.save
-
-		@project.id.should be > 0
-	end
-
-	it "Should save the document to the database with the project id" do
-		@document.project_id = @project.id
-		@document.save
-
-		@document.id.should be > 0
 	end
 
 	it "Should save the media descriptor to the database" do
