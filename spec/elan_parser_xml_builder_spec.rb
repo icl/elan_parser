@@ -57,9 +57,7 @@ describe ElanParser::Xml::Build do
 		xml_doc.constraint(Array.[](@constraint))
 
 		#It should validate against the elan XSD
-		xsd_document = Net::HTTP.get(URI.parse("http://www.mpi.nl/tools/elan/EAFv2.7.xsd"))
-		xsd = Nokogiri::XML::Schema(xsd_document)
-		#puts xml_doc.elan_parser_xml
-		xsd.validate(xml_doc.elan_parser_xml).should be_empty
+		elan_validator = ElanParser::Helper::Validator.new
+		elan_validator.validate_elan_xml(xml_doc.elan_parser_xml).should be_empty
 	end
 end

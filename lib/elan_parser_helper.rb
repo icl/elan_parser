@@ -1,5 +1,15 @@
 module ElanParser
   module Helper
+		class Validator
+			def validate_elan_xml(document_xml)
+				xsd = Nokogiri::XML::Schema(File.open("assets/EAFv2.7.xsd"))
+				is_valid = xsd.validate(document_xml)
+
+				return is_valid
+			end
+		end
+
+
     class Destroyer
       def destroy_children(annotation_document)
         annotation_document.header.media_descriptors.each do |md|
