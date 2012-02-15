@@ -1,7 +1,7 @@
 require 'nokogiri'
 
 module ElanParser
-	module Xml
+	module XML
 		class Build
 			attr_reader :elan_parser_xml
 

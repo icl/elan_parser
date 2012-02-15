@@ -1,7 +1,7 @@
 require "spec_helper"
 require "factories/annotation_documents"
 
-describe ElanParser::DB do
+describe :DBModel do
 	before(:suite) do
 		DatabaseCleaner.strategy = :transaction
 		DatabaseCleaner.clean_with(:truncation)

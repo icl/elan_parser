@@ -1,7 +1,7 @@
 require "spec_helper"
 require "factories/annotation_documents"
 
-describe ElanParser::Xml::Save do
+describe ElanParser::XML::Save do
 	before(:suite) do
 		DatabaseCleaner.strategy = :transaction
 		DatabaseCleaner.clean_with(:truncation)
@@ -19,7 +19,7 @@ describe ElanParser::Xml::Save do
 		file_name = "elan_test.xml"
 		happymapper_document = ElanParser::XML::AnnotationDocument.parse(fixture_file(file_name))
 
-		ElanParser::Xml::Save.new(
+		ElanParser::XML::Save.new(
 			happymapper_document,
 			file_name
 		)

@@ -1,7 +1,7 @@
 require "spec_helper"
 require "factories/annotation_documents"
 
-describe ElanParser::Xml::Build do
+describe ElanParser::XML::Build do
 	before(:suite) do
 		DatabaseCleaner.strategy = :transaction
 		DatabaseCleaner.clean_with(:truncation)
@@ -29,13 +29,13 @@ describe ElanParser::Xml::Build do
 		@locale = Factory.create(:locale)
 		@constraint = Factory.create(:constraint)
 
-		xml_doc = ElanParser::Xml::Build.new
+		xml_doc = ElanParser::XML::Build.new
 	end
 
 
 	it "Should create the XML root element" do
 		#Create our objects from our factory
-		xml_doc = ElanParser::Xml::Build.new
+		xml_doc = ElanParser::XML::Build.new
 
 		xml_doc.annotation_document(@annotation_document)
 		xml_doc.header(@header)

@@ -1,6 +1,5 @@
-
 module ElanParser
-	module Xml
+	module XML
 		class Save
 			def initialize(parsed_annotation_document, file_name)
 				annotation_document = create_annotation_document(parsed_annotation_document, file_name)
