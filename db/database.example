@@ -1,6 +1,0 @@
-adapter: postgresql
-encoding: unicode
-database: cove_elan_development
-pool: 5
-username: 
-password:
