@@ -1,4 +1,4 @@
-class ElanParser < ActiveRecord::Migration
+class ElanParserMigration < ActiveRecord::Migration
   def self.up
 	create_table :elan_parser_media_descriptors do |t|
 		t.column :media_url, :string, :null => false
