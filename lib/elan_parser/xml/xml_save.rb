@@ -193,7 +193,7 @@ module ElanParser
 				media_descriptors = Array.new
 
 				doc.header.media_descriptors.each_with_index do |m, index|
-					media_descriptors[index] = ElanParser::DB::MediaDescriptor.find_or_create_by_media_url(
+					media_descriptors[index] = ElanParser::DB::MediaDescriptor.create(
 						File.basename(m.media_url),
 						:relative_media_url => File.basename(m.media_url),
 						:mime_type => m.mime_type,
