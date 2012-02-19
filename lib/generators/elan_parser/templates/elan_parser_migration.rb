@@ -62,13 +62,13 @@ class ElanParserMigration < ActiveRecord::Migration
 		t.column :ext_ref, :string, :null => true
 		t.column :annotation_ref, :string, :null => true
 		t.column :previous_annotation, :string, :null => true
-		t.column :annotation_value, :string, :null => true
+		t.column :annotation_value, :text, :null => true
 	end
 
 	create_table :elan_parser_alignable_annotations do |t|
 		t.column :svg_ref, :string, :null => true
 		t.column :ext_ref, :string, :null => true
-		t.column :annotation_value, :string, :null => true
+		t.column :annotation_value, :text, :null => true
 	end
 
 	create_table :elan_parser_alignable_annotations_time_slots do |t|
@@ -115,18 +115,18 @@ class ElanParserMigration < ActiveRecord::Migration
 
 	create_table :elan_parser_constraints do |t|
 		t.column :stereotype, :string, :null => true
-		t.column :description, :string, :null => true
+		t.column :description, :text, :null => true
 	end
 
 	create_table :elan_parser_cv_entries do |t|
 	    # This is untested and may have :null => false requirements
-		t.column :description, :string, :null => true
+		t.column :description, :text, :null => true
 		t.column :ext_ref, :string, :null => true
 	end
 
 	create_table :elan_parser_controlled_vocabularies do |t|
 		t.column :cv_id, :string, :null => false
-		t.column :description, :string, :null => false
+		t.column :description, :text, :null => false
 		t.column :ext_ref, :string, :null => true
 	end
 
