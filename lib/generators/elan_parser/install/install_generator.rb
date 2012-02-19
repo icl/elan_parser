@@ -17,7 +17,7 @@ module ElanParser
       end
 
       def copy_migrations
-        migration_template "elan_parser.rb", "db/migrate/elan_parser.rb"
+        migration_template "elan_parser_migration.rb", "db/migrate/elan_parser_migration.rb"
       end
     end
   end

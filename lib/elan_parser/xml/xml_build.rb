@@ -48,10 +48,10 @@ module ElanParser
 					linguistic_type_node["GRAPHIC_REFERENCES"] = linguistic_type.graphic_references.to_s
 					linguistic_type_node["LINGUISTIC_TYPE_ID"] = linguistic_type.linguistic_type_id
 					linguistic_type_node["TIME_ALIGNABLE"] = linguistic_type.time_alignable.to_s
-					linguistic_type_node["CONSTRAINTS"] = linguistic_type.constraints if linguistic_type.constraints
-					linguistic_type_node["CONTROLLED_VOCABULARY_REF"] = linguistic_type.controlled_vocabulary_ref if linguistic_type.controlled_vocabulary_ref
-					linguistic_type_node["EXT_REF"] = linguistic_type.ext_ref if linguistic_type.ext_ref
-					linguistic_type_node["LEXICON_REF"] = linguistic_type.lexicon_ref if linguistic_type.lexicon_ref
+					if linguistic_type.constraints then linguistic_type_node["CONSTRAINTS"] = linguistic_type.constraints end
+				  if linguistic_type.controlled_vocabulary_ref then	linguistic_type_node["CONTROLLED_VOCABULARY_REF"] = linguistic_type.controlled_vocabulary_ref end
+					if linguistic_type.ext_ref then linguistic_type_node["EXT_REF"] = linguistic_type.ext_ref end
+					if linguistic_type.lexicon_ref then linguistic_type_node["LEXICON_REF"] = linguistic_type.lexicon_ref end
 
 					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(linguistic_type_node)
 				end
@@ -160,9 +160,17 @@ module ElanParser
 			def alignable_annotation(annotation_node, annotation)
 				alignable_annotation_node = Nokogiri::XML::Node.new("ALIGNABLE_ANNOTATION", @elan_parser_xml)
 
-				alignable_annotation_node["ANNOTATION_ID"] = "a" + annotation.alignable_annotation.id.to_s
-				alignable_annotation_node["TIME_SLOT_REF1"] = "ts" + annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref1.id.to_s
-				alignable_annotation_node["TIME_SLOT_REF2"] = "ts" + annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref2.id.to_s
+        alignable_id = annotation.alignable_annotation.id.to_s
+        ts1_id = annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref1.id.to_s
+        ts2_id = annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref2.id.to_s
+
+        
+        #Create a composite key for the annotation's uniqueness
+        annotation_id = alignable_id + ts1_id + ts2_id
+
+				alignable_annotation_node["ANNOTATION_ID"] = "a" + annotation_id
+				alignable_annotation_node["TIME_SLOT_REF1"] = "ts" + ts1_id
+				alignable_annotation_node["TIME_SLOT_REF2"] = "ts" + ts2_id
 
 				annotation_value_node = Nokogiri::XML::Node.new("ANNOTATION_VALUE", @elan_parser_xml)
 				annotation_value_node.content = annotation.alignable_annotation.annotation_value
