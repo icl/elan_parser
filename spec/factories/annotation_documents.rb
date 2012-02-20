@@ -62,6 +62,10 @@ Factory.define :linguistic_type, :class => ElanParser::DB::LinguisticType do |f|
 	f.linguistic_type_id "default-lt"
 	f.time_alignable "true"
 	f.graphic_references "false"
+  f.constraints ""
+  f.controlled_vocabulary_ref ""
+  f.ext_ref ""
+  f.lexicon_ref ""
 end
 
 Factory.define :annotation_document_linguistic_type, :class => ElanParser::DB::AnnotationDocumentLinguisticType do |f|

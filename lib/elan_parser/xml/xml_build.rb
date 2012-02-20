@@ -3,15 +3,15 @@ require 'nokogiri'
 module ElanParser
 	module XML
 		class Build
-			attr_reader :elan_parser_xml
+			attr_reader :elan_parser_xml, :validation_errors
 
 			def initialize
 				@elan_parser_xml = Nokogiri::XML::Document.new
 			end
 
-			def build_eaf_document(file_name)
-				annotation_document = ElanParser::DB::AnnotationDocument.find_by_file_name(
-					file_name
+			def build_eaf_document(annotation_document_id)
+				annotation_document = ElanParser::DB::AnnotationDocument.find(
+          annotation_document_id
 				)
 
 				#Build out each module of the XML document
@@ -19,12 +19,18 @@ module ElanParser
 				header(annotation_document.header)
 				media_descriptors(annotation_document.header.media_descriptors)
 				properties(annotation_document.header.properties)
-				time_order(annotation_document.time_order.time_slots)
-				tiers(annotation_document.tiers)	
+				time_slot_ref = time_order(annotation_document.time_order.time_slots)
+
+				tiers(annotation_document.tiers, time_slot_ref)
         linguistic_type(annotation_document.linguistic_types)
         locale(annotation_document.locales)
         constraint(annotation_document.constraints)
 
+        #validate the document and destroy it if it's not valid
+        elan_validator = ElanParser::Helper::Validator.new
+        @validation_errors = elan_validator.validate_elan_xml(@elan_parser_xml)
+
+        #@elan_parser_xml = nil if @validation_errors.size > 0
 			end
 
 			def annotation_document(annotation_document)
@@ -48,10 +54,10 @@ module ElanParser
 					linguistic_type_node["GRAPHIC_REFERENCES"] = linguistic_type.graphic_references.to_s
 					linguistic_type_node["LINGUISTIC_TYPE_ID"] = linguistic_type.linguistic_type_id
 					linguistic_type_node["TIME_ALIGNABLE"] = linguistic_type.time_alignable.to_s
-					if linguistic_type.constraints then linguistic_type_node["CONSTRAINTS"] = linguistic_type.constraints end
-				  if linguistic_type.controlled_vocabulary_ref then	linguistic_type_node["CONTROLLED_VOCABULARY_REF"] = linguistic_type.controlled_vocabulary_ref end
-					if linguistic_type.ext_ref then linguistic_type_node["EXT_REF"] = linguistic_type.ext_ref end
-					if linguistic_type.lexicon_ref then linguistic_type_node["LEXICON_REF"] = linguistic_type.lexicon_ref end
+					if linguistic_type.constraints.length > 0 then linguistic_type_node["CONSTRAINTS"] = linguistic_type.constraints end
+				  if linguistic_type.controlled_vocabulary_ref.length > 0 then	linguistic_type_node["CONTROLLED_VOCABULARY_REF"] = linguistic_type.controlled_vocabulary_ref end
+					if linguistic_type.ext_ref.length > 0 then linguistic_type_node["EXT_REF"] = linguistic_type.ext_ref end
+					if linguistic_type.lexicon_ref.length > 0 then linguistic_type_node["LEXICON_REF"] = linguistic_type.lexicon_ref end
 
 					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(linguistic_type_node)
 				end
@@ -117,23 +123,28 @@ module ElanParser
 			def time_order(time_slots)
 				time_order_node = Nokogiri::XML::Node.new("TIME_ORDER", @elan_parser_xml)
 
-				time_slots.each do |time_slot|
-					time_slot(time_order_node, time_slot)
+        time_slot_ref = Hash.new
+
+				time_slots.each_with_index do |time_slot, index|
+          time_slot_ref[time_slot.id] = index
+					time_slot(time_order_node, time_slot, index)
 				end
 
 				@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(time_order_node)
+
+        return time_slot_ref
 			end
 
-			def time_slot(time_order_node, time_slot)
+			def time_slot(time_order_node, time_slot, index)
 				time_slot_node = Nokogiri::XML::Node.new("TIME_SLOT", @elan_parser_xml)
 
-				time_slot_node["TIME_SLOT_ID"] = "ts" + time_slot.id.to_s
+				time_slot_node["TIME_SLOT_ID"] = "ts" + index.to_s
 				time_slot_node["TIME_VALUE"] = time_slot.time_value.to_s
 
 				time_order_node.add_child(time_slot_node)
 			end
 
-			def tiers(tiers)
+			def tiers(tiers, time_slot_ref)
 				tiers.each do |tier|
 					tier_node = Nokogiri::XML::Node.new("TIER", @elan_parser_xml)
 
@@ -142,28 +153,28 @@ module ElanParser
 					tier_node["TIER_ID"] = tier.tier_id
 
 					tier.annotations.each do |annotation|
-						annotation(tier_node, annotation)
+						annotation(tier_node, annotation, time_slot_ref)
 					end
 
 					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(tier_node)
 				end
 			end
 
-			def annotation(tier_node, annotation)
+			def annotation(tier_node, annotation, time_slot_ref)
 				annotation_node = Nokogiri::XML::Node.new("ANNOTATION", @elan_parser_xml)
 
-				alignable_annotation(annotation_node, annotation)
+				alignable_annotation(annotation_node, annotation, time_slot_ref)
 
 				tier_node.add_child(annotation_node)
 			end
 
-			def alignable_annotation(annotation_node, annotation)
+			def alignable_annotation(annotation_node, annotation, time_slot_ref)
 				alignable_annotation_node = Nokogiri::XML::Node.new("ALIGNABLE_ANNOTATION", @elan_parser_xml)
 
         alignable_id = annotation.alignable_annotation.id.to_s
-        ts1_id = annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref1.id.to_s
-        ts2_id = annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref2.id.to_s
 
+        ts1_id = time_slot_ref[annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref1.id].to_s
+        ts2_id = time_slot_ref[annotation.alignable_annotation.alignable_annotation_time_slot.time_slot_ref2.id].to_s
         
         #Create a composite key for the annotation's uniqueness
         annotation_id = alignable_id + ts1_id + ts2_id
