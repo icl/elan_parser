@@ -2,23 +2,26 @@ module ElanParser
 	module XML
 		class Save
 			def initialize(parsed_annotation_document, file_name)
-				annotation_document = create_annotation_document(parsed_annotation_document, file_name)
 
-				create_linguistic_type(parsed_annotation_document, annotation_document)
-				create_locale(parsed_annotation_document, annotation_document)
-				create_constraint(parsed_annotation_document, annotation_document)
+        ElanParser::DB::AnnotationDocument.transaction do
+          annotation_document = create_annotation_document(parsed_annotation_document, file_name)
 
-				header = create_header(parsed_annotation_document, annotation_document)
-				media_descriptors = create_media_descriptors(parsed_annotation_document)
-				join_header_media_descriptors(header, media_descriptors)
+          create_linguistic_type(parsed_annotation_document, annotation_document)
+          create_locale(parsed_annotation_document, annotation_document)
+          create_constraint(parsed_annotation_document, annotation_document)
 
-				properties = create_properties(parsed_annotation_document)
-				join_header_properties(header, properties)
-				
-				#Create any new time slots, then assign them to the time order in this document.
-				time_slots = create_time_slots(parsed_annotation_document)
-				create_time_orders(parsed_annotation_document, time_slots, annotation_document)
-				create_annotations(parsed_annotation_document, time_slots, annotation_document)
+          header = create_header(parsed_annotation_document, annotation_document)
+          media_descriptors = create_media_descriptors(parsed_annotation_document)
+          join_header_media_descriptors(header, media_descriptors)
+
+          properties = create_properties(parsed_annotation_document)
+          join_header_properties(header, properties)
+          
+          #Create any new time slots, then assign them to the time order in this document.
+          time_slots = create_time_slots(parsed_annotation_document)
+          create_time_orders(parsed_annotation_document, time_slots, annotation_document)
+          create_annotations(parsed_annotation_document, time_slots, annotation_document)
+        end
 			end
 
 			def create_annotations(doc, time_slots, annotation_document)
