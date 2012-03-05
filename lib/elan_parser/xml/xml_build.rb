@@ -26,6 +26,8 @@ module ElanParser
         locale(annotation_document.locales)
         constraint(annotation_document.constraints)
 
+				controlled_vocabularies(annotation_document.controlled_vocabularies)
+
         #validate the document and destroy it if it's not valid
         elan_validator = ElanParser::Helper::Validator.new
         @validation_errors = elan_validator.validate_elan_xml(@elan_parser_xml)
@@ -45,6 +47,26 @@ module ElanParser
 #				annotation_node["xsi:noNamespaceSchemaLocation"] = annotation_document.xsi_no_name_space_schema_location
 
 				@elan_parser_xml.add_child(annotation_node)
+			end
+
+			def controlled_vocabularies(controlled_vocabularies)
+				controlled_vocabularies.each do |cv|
+					cv_node = Nokogiri::XML::Node.new("CONTROLLED_VOCABULARY", @elan_parser_xml)
+
+					cv_node["CV_ID"] = cv.cv_id
+					cv_node["DESCRIPTION"] = cv.description
+					cv_node["EXT_REF"] = cv.ext_ref
+					
+					cv.cv_entries.each do |entry|
+						cv_entry_node = Nokogiri::XML::Node.new("CV_ENTRY", @elan_parser_xml)
+						cv_entry_node["DESCRIPTION"] = entry.description
+						cv_entry_node["EXT_REF"] = entry.ext_ref
+						cv_entry_node.content = entry.cv_entry
+						cv_node.add_child(cv_entry_node)
+					end
+
+					@elan_parser_xml.xpath("/ANNOTATION_DOCUMENT").first.add_child(cv_node)
+				end
 			end
 
 			def linguistic_type(linguistic_types)

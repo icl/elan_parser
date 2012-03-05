@@ -21,7 +21,7 @@ module ElanParser
 			has_many :constraints, :through => :annotation_document_constraints, :dependent => :destroy
 
 	## These relationships are not active. They are currently stubs.
-	#		has_many :controlled_vocabularies
+			has_many :controlled_vocabularies
 	#		has_many :lexicon_refs
 	#		has_many :external_refs
 		end

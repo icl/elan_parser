@@ -32,7 +32,24 @@ module ElanParser
           #Create any new time slots, then assign them to the time order in this document.
           time_slot_ref = create_time_orders(parsed_annotation_document, annotation_document)
           create_annotations(parsed_annotation_document, time_slot_ref, annotation_document)
+
+					#Handle controlled vocabulary
+					create_controlled_vocabularies(parsed_annotation_document, annotation_document)	
         end
+			end
+
+			def create_controlled_vocabularies(doc, annotation_document)
+				doc.controlled_vocabularies.each do |cv|
+					controlled_vocabulary = annotation_document.controlled_vocabularies.create(:cv_id => cv.cv_id,
+						:description => cv.description,
+						:ext_ref => cv.ext_ref)
+
+					cv.cv_entries.each do |entry|
+						controlled_vocabulary.cv_entries.create(:description => entry.description,
+							:ext_ref => entry.ext_ref,
+							:cv_entry => entry.value)
+					end
+				end
 			end
 
 			def create_annotations(doc, time_slot_ref, annotation_document)
