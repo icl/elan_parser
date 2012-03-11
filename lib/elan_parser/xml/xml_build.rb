@@ -206,7 +206,7 @@ module ElanParser
 				alignable_annotation_node["TIME_SLOT_REF2"] = "ts" + ts2_id
 
 				annotation_value_node = Nokogiri::XML::Node.new("ANNOTATION_VALUE", @elan_parser_xml)
-				annotation_value_node.content = annotation.alignable_annotation.annotation_value
+				annotation_value_node.content = annotation.alignable_annotation.annotation_value.value
 
 				alignable_annotation_node.add_child(annotation_value_node)
 				annotation_node.add_child(alignable_annotation_node)

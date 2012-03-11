@@ -174,12 +174,18 @@ module ElanParser
 			end
 
 			def create_alignable_annotation(happymapper_alignable_annotation)
-				alignable_annotation = ElanParser::DB::AlignableAnnotation.find_or_create_by_annotation_value(
-					:annotation_value => happymapper_alignable_annotation.annotation_value
+				alignable_annotation = ElanParser::DB::AlignableAnnotation.create(
+					:annotation_value => create_or_return_annotation_value(happymapper_alignable_annotation)
 				)
 
 				return alignable_annotation
 			end
+
+      def create_or_return_annotation_value(happymapper_alignable_annotation)
+        return ElanParser::DB::AnnotationValue.find_or_create_by_annotation_value(
+					:annotation_value => happymapper_alignable_annotation.annotation_value
+				)
+      end
 
 			def create_annotation_document(doc, file_name)
 				annotation_document = ElanParser::DB::AnnotationDocument.create(

@@ -7,6 +7,8 @@ module ElanParser
 
 			has_one :alignable_annotation_time_slot, :dependent => :destroy
 			has_one :annotation, :dependent => :destroy
+
+      belongs_to :annotation_value
 		end
 	end
 end
