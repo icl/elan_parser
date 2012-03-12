@@ -2,10 +2,14 @@ require "spec_helper"
 require "factories/annotation_documents"
 
 require "generators/elan_parser/templates/elan_parser_migration"
+require "generators/elan_parser/templates/elan_parser_migration_to_05"
+require "generators/elan_parser/templates/elan_parser_migration_to_06"
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
 ActiveRecord::Schema.define(:version => 1) do
   ElanParserMigration.new.up
+  ElanParserMigrationTo05.new.up
+  ElanParserMigrationTo06.new.up
 end
 
 describe :DBModel do

@@ -40,8 +40,15 @@ FactoryGirl.define do
 	end
 
 	factory :alignable_annotation, :class => ElanParser::DB::AlignableAnnotation do
-		sequence(:annotation_value) {|n| n}
+		#sequence(:annotation_value) {|n| n}
+    association :annotation_value
 	end
+end
+
+FactoryGirl.define do
+  factory :annotation_value, :class => ElanParser::DB::AnnotationValue do
+    sequence(:annotation_value) {|n| n}
+  end
 end
 
 Factory.define :annotation, :class => ElanParser::DB::Annotation do |f|

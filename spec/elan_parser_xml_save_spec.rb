@@ -36,7 +36,7 @@ describe ElanParser::XML::Save do
 
 				annotation.alignable_annotations.each do |alignable_annotation|
 					#Compare the happymapper annotation value with the db value
-					ElanParser::DB::AlignableAnnotation.find_by_annotation_value(alignable_annotation.annotation_value).equal? alignable_annotation.annotation_value
+					ElanParser::DB::AnnotationValue.find_by_annotation_value(alignable_annotation.annotation_value).equal? alignable_annotation.annotation_value
 				end
 			end
 		end
