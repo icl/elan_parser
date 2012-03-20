@@ -1,5 +1,3 @@
-require 'nokogiri'
-
 module ElanParser
 	module XML
 		class Build
