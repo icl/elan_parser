@@ -17,14 +17,15 @@ describe ElanParser::XML::Save do
 
 	it "Should parse one fixture into a happymapper document and match the values to saved active record values" do
 		file_name = "elan_test.xml"
-		happymapper_document = ElanParser::XML::AnnotationDocument.parse(fixture_file(file_name))
 
 		ElanParser::XML::Save.new(
-			happymapper_document,
+			fixture_file(file_name),
 			file_name
 		)
 
 		annotation_document = ElanParser::DB::AnnotationDocument.find_by_file_name(file_name)
+
+    happymapper_document = ElanParser::XML::AnnotationDocument.parse(fixture_file(file_name))
 		
 		#The saved annotations should match the annotations from the fixture
 		happymapper_document.tiers.each do |tier|
@@ -35,7 +36,7 @@ describe ElanParser::XML::Save do
 
 				annotation.alignable_annotations.each do |alignable_annotation|
 					#Compare the happymapper annotation value with the db value
-					ElanParser::DB::AlignableAnnotation.find_by_annotation_value(alignable_annotation.annotation_value).equal? alignable_annotation.annotation_value
+					ElanParser::DB::AnnotationValue.find_by_annotation_value(alignable_annotation.annotation_value).equal? alignable_annotation.annotation_value
 				end
 			end
 		end

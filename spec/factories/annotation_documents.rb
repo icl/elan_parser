@@ -40,8 +40,15 @@ FactoryGirl.define do
 	end
 
 	factory :alignable_annotation, :class => ElanParser::DB::AlignableAnnotation do
-		sequence(:annotation_value) {|n| n}
+		#sequence(:annotation_value) {|n| n}
+    association :annotation_value
 	end
+end
+
+FactoryGirl.define do
+  factory :annotation_value, :class => ElanParser::DB::AnnotationValue do
+    sequence(:annotation_value) {|n| n}
+  end
 end
 
 Factory.define :annotation, :class => ElanParser::DB::Annotation do |f|
@@ -62,6 +69,10 @@ Factory.define :linguistic_type, :class => ElanParser::DB::LinguisticType do |f|
 	f.linguistic_type_id "default-lt"
 	f.time_alignable "true"
 	f.graphic_references "false"
+  f.constraints ""
+  f.controlled_vocabulary_ref ""
+  f.ext_ref ""
+  f.lexicon_ref ""
 end
 
 Factory.define :annotation_document_linguistic_type, :class => ElanParser::DB::AnnotationDocumentLinguisticType do |f|

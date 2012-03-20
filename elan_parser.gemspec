@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
 	s.add_development_dependency "factory_girl"
 	s.add_development_dependency "database_cleaner"
-
+  s.add_development_dependency "sqlite3", "~> 1.3.5"
 
   # s.add_runtime_dependency "rest-client"
   s.add_runtime_dependency "happymapper"

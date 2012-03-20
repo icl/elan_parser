@@ -1,6 +1,7 @@
 module ElanParser
 	module DB
 		autoload :AlignableAnnotation, 'elan_parser/db/db_alignable_annotation'
+		autoload :AnnotationValue, 'elan_parser/db/db_annotation_value'
 		autoload :AlignableAnnotationTimeSlot, 'elan_parser/db/db_alignable_annotation_time_slot'
 		autoload :AnnotationControlledVocabularyDocument, 'elan_parser/db/db_annotation_controlled_vocabulary_document'
 		autoload :AnnotationDocumentConstraint, 'elan_parser/db/db_annotation_document_constraint'

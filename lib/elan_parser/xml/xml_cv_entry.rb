@@ -5,8 +5,11 @@ module ElanParser
 		class CvEntry
 			include HappyMapper
 
-			attribute :description, :tag => 'DESCRIPTION'
-			attribute :ext_ref, :tag => 'EXT_REF'
+			tag 'CV_ENTRY'
+
+			attribute :description, String, :tag => 'DESCRIPTION'
+			attribute :ext_ref, String, :tag => 'EXT_REF'
+			content :value
 		end
 	end
 end

@@ -47,10 +47,10 @@ describe ElanParser::XML::Build do
 
 		time_slots = Array.[](@time_slot_a, @time_slot_b)
 
-		xml_doc.time_order(time_slots)
+		time_slot_ref = xml_doc.time_order(time_slots)
 
 		alignable_annotation_time_slots = Array.[](@alignable_annotation_time_slot_a, @alignable_annotation_time_slot_b)
-		xml_doc.tiers(Array.[](@tier))
+		xml_doc.tiers(Array.[](@tier), time_slot_ref)
 
 		xml_doc.linguistic_type(Array.[](@linguistic_type))
 		xml_doc.locale(Array.[](@locale))
@@ -59,5 +59,6 @@ describe ElanParser::XML::Build do
 		#It should validate against the elan XSD
 		elan_validator = ElanParser::Helper::Validator.new
 		elan_validator.validate_elan_xml(xml_doc.elan_parser_xml).should be_empty
+    puts xml_doc.elan_parser_xml
 	end
 end
