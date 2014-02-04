@@ -1,4 +1,3 @@
-require 'nokogiri'
 
 module ElanParser
 	module XML
@@ -7,11 +6,12 @@ module ElanParser
 
 			def initialize(eaf_xml, file_name)
         #Validate the XML
-        elan_validator = ElanParser::Helper::Validator.new
-        nokogiri_doc = Nokogiri::XML(eaf_xml)
-        @validation_errors = elan_validator.validate_elan_xml(nokogiri_doc)
+        #elan_validator = ElanParser::Helper::Validator.new
+        #nokogiri_doc = Nokogiri::XML(eaf_xml)
+        #@validation_errors = elan_validator.validate_elan_xml(nokogiri_doc)
         @pkey_id = 0
 
+        @validation_errors = []
         if (@validation_errors.size == 0) then
           parsed_annotation_document = ElanParser::XML::AnnotationDocument.parse(eaf_xml)
           annotation_document = create_annotation_document(parsed_annotation_document, file_name)
